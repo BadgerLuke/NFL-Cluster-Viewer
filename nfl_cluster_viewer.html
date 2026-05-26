@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>2026 NFL — Weeks 15–17 Cluster Finder</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
+<style>
+  html, body { margin: 0; padding: 0; background: #05060d; }
+  * { box-sizing: border-box; }
+  #root { min-height: 100vh; }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 5px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="react">
+const { useState, useMemo } = React;
+
+const DATA = {"abbr": {"Arizona Cardinals": "ARI", "Atlanta Falcons": "ATL", "Baltimore Ravens": "BAL", "Buffalo Bills": "BUF", "Carolina Panthers": "CAR", "Chicago Bears": "CHI", "Cincinnati Bengals": "CIN", "Cleveland Browns": "CLE", "Dallas Cowboys": "DAL", "Denver Broncos": "DEN", "Detroit Lions": "DET", "Green Bay Packers": "GB", "Houston Texans": "HOU", "Indianapolis Colts": "IND", "Jacksonville Jaguars": "JAX", "Kansas City Chiefs": "KC", "Las Vegas Raiders": "LV", "Los Angeles Chargers": "LAC", "Los Angeles Rams": "LAR", "Miami Dolphins": "MIA", "Minnesota Vikings": "MIN", "New England Patriots": "NE", "New Orleans Saints": "NO", "New York Giants": "NYG", "New York Jets": "NYJ", "Philadelphia Eagles": "PHI", "Pittsburgh Steelers": "PIT", "San Francisco 49ers": "SF", "Seattle Seahawks": "SEA", "Tampa Bay Buccaneers": "TB", "Tennessee Titans": "TEN", "Washington Commanders": "WAS"}, "teams": ["Arizona Cardinals", "Atlanta Falcons", "Baltimore Ravens", "Buffalo Bills", "Carolina Panthers", "Chicago Bears", "Cincinnati Bengals", "Cleveland Browns", "Dallas Cowboys", "Denver Broncos", "Detroit Lions", "Green Bay Packers", "Houston Texans", "Indianapolis Colts", "Jacksonville Jaguars", "Kansas City Chiefs", "Las Vegas Raiders", "Los Angeles Chargers", "Los Angeles Rams", "Miami Dolphins", "Minnesota Vikings", "New England Patriots", "New Orleans Saints", "New York Giants", "New York Jets", "Philadelphia Eagles", "Pittsburgh Steelers", "San Francisco 49ers", "Seattle Seahawks", "Tampa Bay Buccaneers", "Tennessee Titans", "Washington Commanders"], "best_groups": {"Arizona Cardinals": {"count": 6, "group": ["Arizona Cardinals", "Atlanta Falcons", "Las Vegas Raiders", "New Orleans Saints", "New York Jets", "Tampa Bay Buccaneers"], "team_involved": 3, "games": [{"week": 15, "home": "Arizona Cardinals", "away": "New York Jets", "date": "Dec. 20", "time": "4:05 p.m.", "tv": "Fox"}, {"week": 15, "home": "Tampa Bay Buccaneers", "away": "New Orleans Saints", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 16, "home": "Atlanta Falcons", "away": "Tampa Bay Buccaneers", "date": "TBD", "time": "TBD", "tv": "TBD"}, {"week": 16, "home": "New Orleans Saints", "away": "Arizona Cardinals", "date": "Dec. 27", "time": "1 p.m.", "tv": "Fox"}, {"week": 17, "home": "Arizona Cardinals", "away": "Las Vegas Raiders", "date": "Jan. 3", "time": "4:05 p.m.", "tv": "CBS"}, {"week": 17, "home": "Atlanta Falcons", "away": "New Orleans Saints", "date": "Jan. 3", "time": "1:00 p.m.", "tv": "Fox"}]}, "Atlanta Falcons": {"count": 6, "group": ["Atlanta Falcons", "Arizona Cardinals", "Jacksonville Jaguars", "New Orleans Saints", "Tampa Bay Buccaneers", "Washington Commanders"], "team_involved": 3, "games": [{"week": 15, "home": "Tampa Bay Buccaneers", "away": "New Orleans Saints", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 15, "home": "Washington Commanders", "away": "Atlanta Falcons", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 16, "home": "Atlanta Falcons", "away": "Tampa Bay Buccaneers", "date": "TBD", "time": "TBD", "tv": "TBD"}, {"week": 16, "home": "New Orleans Saints", "away": "Arizona Cardinals", "date": "Dec. 27", "time": "1 p.m.", "tv": "Fox"}, {"week": 17, "home": "Atlanta Falcons", "away": "New Orleans Saints", "date": "Jan. 3", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 17, "home": "Jacksonville Jaguars", "away": "Washington Commanders", "date": "TBD", "time": "TBD", "tv": "TBD"}]}, "Baltimore Ravens": {"count": 7, "group": ["Baltimore Ravens", "Carolina Panthers", "Cincinnati Bengals", "Cleveland Browns", "Indianapolis Colts", "Pittsburgh Steelers"], "team_involved": 3, "games": [{"week": 15, "home": "Carolina Panthers", "away": "Cincinnati Bengals", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 15, "home": "Pittsburgh Steelers", "away": "Baltimore Ravens", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "CBS"}, {"week": 16, "home": "Baltimore Ravens", "away": "Cleveland Browns", "date": "Dec. 27", "time": "1:00 p.m.", "tv": "CBS"}, {"week": 16, "home": "Indianapolis Colts", "away": "Cincinnati Bengals", "date": "TBD", "time": "TBD", "tv": "TBD"}, {"week": 16, "home": "Pittsburgh Steelers", "away": "Carolina Panthers", "date": "TBD", "time": "TBD", "tv": "TBD"}, {"week": 17, "home": "Cincinnati Bengals", "away": "Baltimore Ravens", "date": "Dec. 31 (TNF - New Year's Eve)", "time": "8:15 p.m.", "tv": "Prime Video"}, {"week": 17, "home": "Cleveland Browns", "away": "Indianapolis Colts", "date": "Jan. 3", "time": "1:00 p.m.", "tv": "Fox"}]}, "Buffalo Bills": {"count": 6, "group": ["Buffalo Bills", "Chicago Bears", "Denver Broncos", "Detroit Lions", "Green Bay Packers", "Miami Dolphins"], "team_involved": 3, "games": [{"week": 15, "home": "Buffalo Bills", "away": "Chicago Bears", "date": "Dec. 19 (Saturday)", "time": "8:20 p.m.", "tv": "CBS"}, {"week": 15, "home": "Green Bay Packers", "away": "Miami Dolphins", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 16, "home": "Chicago Bears", "away": "Green Bay Packers", "date": "Dec. 25 (Christmas)", "time": "1 p.m.", "tv": "Netflix"}, {"week": 16, "home": "Denver Broncos", "away": "Buffalo Bills", "date": "Dec. 25 (Christmas)", "time": "4:30 p.m.", "tv": "Netflix"}, {"week": 17, "home": "Chicago Bears", "away": "Detroit Lions", "date": "Jan. 3", "time": "4:25 p.m.", "tv": "Fox"}, {"week": 17, "home": "Miami Dolphins", "away": "Buffalo Bills", "date": "Jan. 3", "time": "1:00 p.m.", "tv": "CBS"}]}, "Carolina Panthers": {"count": 7, "group": ["Carolina Panthers", "Baltimore Ravens", "Cincinnati Bengals", "Cleveland Browns", "Indianapolis Colts", "Pittsburgh Steelers"], "team_involved": 2, "games": [{"week": 15, "home": "Carolina Panthers", "away": "Cincinnati Bengals", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 15, "home": "Pittsburgh Steelers", "away": "Baltimore Ravens", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "CBS"}, {"week": 16, "home": "Baltimore Ravens", "away": "Cleveland Browns", "date": "Dec. 27", "time": "1:00 p.m.", "tv": "CBS"}, {"week": 16, "home": "Indianapolis Colts", "away": "Cincinnati Bengals", "date": "TBD", "time": "TBD", "tv": "TBD"}, {"week": 16, "home": "Pittsburgh Steelers", "away": "Carolina Panthers", "date": "TBD", "time": "TBD", "tv": "TBD"}, {"week": 17, "home": "Cincinnati Bengals", "away": "Baltimore Ravens", "date": "Dec. 31 (TNF - New Year's Eve)", "time": "8:15 p.m.", "tv": "Prime Video"}, {"week": 17, "home": "Cleveland Browns", "away": "Indianapolis Colts", "date": "Jan. 3", "time": "1:00 p.m.", "tv": "Fox"}]}, "Chicago Bears": {"count": 6, "group": ["Chicago Bears", "Buffalo Bills", "Denver Broncos", "Detroit Lions", "Green Bay Packers", "Miami Dolphins"], "team_involved": 3, "games": [{"week": 15, "home": "Buffalo Bills", "away": "Chicago Bears", "date": "Dec. 19 (Saturday)", "time": "8:20 p.m.", "tv": "CBS"}, {"week": 15, "home": "Green Bay Packers", "away": "Miami Dolphins", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 16, "home": "Chicago Bears", "away": "Green Bay Packers", "date": "Dec. 25 (Christmas)", "time": "1 p.m.", "tv": "Netflix"}, {"week": 16, "home": "Denver Broncos", "away": "Buffalo Bills", "date": "Dec. 25 (Christmas)", "time": "4:30 p.m.", "tv": "Netflix"}, {"week": 17, "home": "Chicago Bears", "away": "Detroit Lions", "date": "Jan. 3", "time": "4:25 p.m.", "tv": "Fox"}, {"week": 17, "home": "Miami Dolphins", "away": "Buffalo Bills", "date": "Jan. 3", "time": "1:00 p.m.", "tv": "CBS"}]}, "Cincinnati Bengals": {"count": 7, "group": ["Cincinnati Bengals", "Baltimore Ravens", "Carolina Panthers", "Cleveland Browns", "Indianapolis Colts", "Pittsburgh Steelers"], "team_involved": 3, "games": [{"week": 15, "home": "Carolina Panthers", "away": "Cincinnati Bengals", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 15, "home": "Pittsburgh Steelers", "away": "Baltimore Ravens", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "CBS"}, {"week": 16, "home": "Baltimore Ravens", "away": "Cleveland Browns", "date": "Dec. 27", "time": "1:00 p.m.", "tv": "CBS"}, {"week": 16, "home": "Indianapolis Colts", "away": "Cincinnati Bengals", "date": "TBD", "time": "TBD", "tv": "TBD"}, {"week": 16, "home": "Pittsburgh Steelers", "away": "Carolina Panthers", "date": "TBD", "time": "TBD", "tv": "TBD"}, {"week": 17, "home": "Cincinnati Bengals", "away": "Baltimore Ravens", "date": "Dec. 31 (TNF - New Year's Eve)", "time": "8:15 p.m.", "tv": "Prime Video"}, {"week": 17, "home": "Cleveland Browns", "away": "Indianapolis Colts", "date": "Jan. 3", "time": "1:00 p.m.", "tv": "Fox"}]}, "Cleveland Browns": {"count": 7, "group": ["Cleveland Browns", "Baltimore Ravens", "Carolina Panthers", "Cincinnati Bengals", "Indianapolis Colts", "Pittsburgh Steelers"], "team_involved": 2, "games": [{"week": 15, "home": "Carolina Panthers", "away": "Cincinnati Bengals", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 15, "home": "Pittsburgh Steelers", "away": "Baltimore Ravens", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "CBS"}, {"week": 16, "home": "Baltimore Ravens", "away": "Cleveland Browns", "date": "Dec. 27", "time": "1:00 p.m.", "tv": "CBS"}, {"week": 16, "home": "Indianapolis Colts", "away": "Cincinnati Bengals", "date": "TBD", "time": "TBD", "tv": "TBD"}, {"week": 16, "home": "Pittsburgh Steelers", "away": "Carolina Panthers", "date": "TBD", "time": "TBD", "tv": "TBD"}, {"week": 17, "home": "Cincinnati Bengals", "away": "Baltimore Ravens", "date": "Dec. 31 (TNF - New Year's Eve)", "time": "8:15 p.m.", "tv": "Prime Video"}, {"week": 17, "home": "Cleveland Browns", "away": "Indianapolis Colts", "date": "Jan. 3", "time": "1:00 p.m.", "tv": "Fox"}]}, "Dallas Cowboys": {"count": 6, "group": ["Dallas Cowboys", "Atlanta Falcons", "Jacksonville Jaguars", "Los Angeles Rams", "New Orleans Saints", "Tampa Bay Buccaneers"], "team_involved": 2, "games": [{"week": 15, "home": "Los Angeles Rams", "away": "Dallas Cowboys", "date": "Dec. 20", "time": "4:25 p.m.", "tv": "CBS"}, {"week": 15, "home": "Tampa Bay Buccaneers", "away": "New Orleans Saints", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 16, "home": "Atlanta Falcons", "away": "Tampa Bay Buccaneers", "date": "TBD", "time": "TBD", "tv": "TBD"}, {"week": 16, "home": "Dallas Cowboys", "away": "Jacksonville Jaguars", "date": "Dec. 27 (SNF)", "time": "8:20 p.m.", "tv": "NBC"}, {"week": 17, "home": "Atlanta Falcons", "away": "New Orleans Saints", "date": "Jan. 3", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 17, "home": "Tampa Bay Buccaneers", "away": "Los Angeles Rams", "date": "TBD", "time": "TBD", "tv": "TBD"}]}, "Denver Broncos": {"count": 6, "group": ["Denver Broncos", "Arizona Cardinals", "Buffalo Bills", "Las Vegas Raiders", "New England Patriots", "New York Jets"], "team_involved": 3, "games": [{"week": 15, "home": "Arizona Cardinals", "away": "New York Jets", "date": "Dec. 20", "time": "4:05 p.m.", "tv": "Fox"}, {"week": 15, "home": "Denver Broncos", "away": "Las Vegas Raiders", "date": "Dec. 20", "time": "4:25 p.m.", "tv": "CBS"}, {"week": 16, "home": "Denver Broncos", "away": "Buffalo Bills", "date": "Dec. 25 (Christmas)", "time": "4:30 p.m.", "tv": "Netflix"}, {"week": 16, "home": "New York Jets", "away": "New England Patriots", "date": "Dec. 27", "time": "1:00 p.m.", "tv": "CBS"}, {"week": 17, "home": "Arizona Cardinals", "away": "Las Vegas Raiders", "date": "Jan. 3", "time": "4:05 p.m.", "tv": "CBS"}, {"week": 17, "home": "New England Patriots", "away": "Denver Broncos", "date": "TBD", "time": "TBD", "tv": "TBD"}]}, "Detroit Lions": {"count": 6, "group": ["Detroit Lions", "Buffalo Bills", "Chicago Bears", "Green Bay Packers", "Miami Dolphins", "Minnesota Vikings"], "team_involved": 2, "games": [{"week": 15, "home": "Buffalo Bills", "away": "Chicago Bears", "date": "Dec. 19 (Saturday)", "time": "8:20 p.m.", "tv": "CBS"}, {"week": 15, "home": "Green Bay Packers", "away": "Miami Dolphins", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 15, "home": "Minnesota Vikings", "away": "Detroit Lions", "date": "Dec. 20 (SNF)", "time": "8:20 p.m.", "tv": "NBC"}, {"week": 16, "home": "Chicago Bears", "away": "Green Bay Packers", "date": "Dec. 25 (Christmas)", "time": "1 p.m.", "tv": "Netflix"}, {"week": 17, "home": "Chicago Bears", "away": "Detroit Lions", "date": "Jan. 3", "time": "4:25 p.m.", "tv": "Fox"}, {"week": 17, "home": "Miami Dolphins", "away": "Buffalo Bills", "date": "Jan. 3", "time": "1:00 p.m.", "tv": "CBS"}]}, "Green Bay Packers": {"count": 6, "group": ["Green Bay Packers", "Buffalo Bills", "Chicago Bears", "Denver Broncos", "Houston Texans", "Miami Dolphins"], "team_involved": 3, "games": [{"week": 15, "home": "Buffalo Bills", "away": "Chicago Bears", "date": "Dec. 19 (Saturday)", "time": "8:20 p.m.", "tv": "CBS"}, {"week": 15, "home": "Green Bay Packers", "away": "Miami Dolphins", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 16, "home": "Chicago Bears", "away": "Green Bay Packers", "date": "Dec. 25 (Christmas)", "time": "1 p.m.", "tv": "Netflix"}, {"week": 16, "home": "Denver Broncos", "away": "Buffalo Bills", "date": "Dec. 25 (Christmas)", "time": "4:30 p.m.", "tv": "Netflix"}, {"week": 17, "home": "Green Bay Packers", "away": "Houston Texans", "date": "Jan. 4 (MNF)", "time": "8:15 p.m.", "tv": "ESPN"}, {"week": 17, "home": "Miami Dolphins", "away": "Buffalo Bills", "date": "Jan. 3", "time": "1:00 p.m.", "tv": "CBS"}]}, "Houston Texans": {"count": 6, "group": ["Houston Texans", "Buffalo Bills", "Chicago Bears", "Green Bay Packers", "Jacksonville Jaguars", "Miami Dolphins"], "team_involved": 2, "games": [{"week": 15, "home": "Buffalo Bills", "away": "Chicago Bears", "date": "Dec. 19 (Saturday)", "time": "8:20 p.m.", "tv": "CBS"}, {"week": 15, "home": "Green Bay Packers", "away": "Miami Dolphins", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 15, "home": "Houston Texans", "away": "Jacksonville Jaguars", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "CBS"}, {"week": 16, "home": "Chicago Bears", "away": "Green Bay Packers", "date": "Dec. 25 (Christmas)", "time": "1 p.m.", "tv": "Netflix"}, {"week": 17, "home": "Green Bay Packers", "away": "Houston Texans", "date": "Jan. 4 (MNF)", "time": "8:15 p.m.", "tv": "ESPN"}, {"week": 17, "home": "Miami Dolphins", "away": "Buffalo Bills", "date": "Jan. 3", "time": "1:00 p.m.", "tv": "CBS"}]}, "Indianapolis Colts": {"count": 7, "group": ["Indianapolis Colts", "Baltimore Ravens", "Cincinnati Bengals", "Cleveland Browns", "Pittsburgh Steelers", "Tennessee Titans"], "team_involved": 3, "games": [{"week": 15, "home": "Pittsburgh Steelers", "away": "Baltimore Ravens", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "CBS"}, {"week": 15, "home": "Tennessee Titans", "away": "Indianapolis Colts", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "CBS"}, {"week": 16, "home": "Baltimore Ravens", "away": "Cleveland Browns", "date": "Dec. 27", "time": "1:00 p.m.", "tv": "CBS"}, {"week": 16, "home": "Indianapolis Colts", "away": "Cincinnati Bengals", "date": "TBD", "time": "TBD", "tv": "TBD"}, {"week": 17, "home": "Cincinnati Bengals", "away": "Baltimore Ravens", "date": "Dec. 31 (TNF - New Year's Eve)", "time": "8:15 p.m.", "tv": "Prime Video"}, {"week": 17, "home": "Cleveland Browns", "away": "Indianapolis Colts", "date": "Jan. 3", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 17, "home": "Pittsburgh Steelers", "away": "Tennessee Titans", "date": "Jan. 3", "time": "1:00 p.m.", "tv": "CBS"}]}, "Jacksonville Jaguars": {"count": 6, "group": ["Jacksonville Jaguars", "Atlanta Falcons", "Dallas Cowboys", "Los Angeles Rams", "Tampa Bay Buccaneers", "Washington Commanders"], "team_involved": 2, "games": [{"week": 15, "home": "Los Angeles Rams", "away": "Dallas Cowboys", "date": "Dec. 20", "time": "4:25 p.m.", "tv": "CBS"}, {"week": 15, "home": "Washington Commanders", "away": "Atlanta Falcons", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 16, "home": "Atlanta Falcons", "away": "Tampa Bay Buccaneers", "date": "TBD", "time": "TBD", "tv": "TBD"}, {"week": 16, "home": "Dallas Cowboys", "away": "Jacksonville Jaguars", "date": "Dec. 27 (SNF)", "time": "8:20 p.m.", "tv": "NBC"}, {"week": 17, "home": "Jacksonville Jaguars", "away": "Washington Commanders", "date": "TBD", "time": "TBD", "tv": "TBD"}, {"week": 17, "home": "Tampa Bay Buccaneers", "away": "Los Angeles Rams", "date": "TBD", "time": "TBD", "tv": "TBD"}]}, "Kansas City Chiefs": {"count": 6, "group": ["Kansas City Chiefs", "Arizona Cardinals", "Los Angeles Chargers", "New England Patriots", "New York Jets", "San Francisco 49ers"], "team_involved": 3, "games": [{"week": 15, "home": "Arizona Cardinals", "away": "New York Jets", "date": "Dec. 20", "time": "4:05 p.m.", "tv": "Fox"}, {"week": 15, "home": "Kansas City Chiefs", "away": "New England Patriots", "date": "Dec. 21 (MNF)", "time": "8:15 p.m.", "tv": "ESPN"}, {"week": 15, "home": "Los Angeles Chargers", "away": "San Francisco 49ers", "date": "Dec. 17 (TNF)", "time": "8:15 p.m.", "tv": "Prime Video"}, {"week": 16, "home": "Kansas City Chiefs", "away": "San Francisco 49ers", "date": "Dec. 27", "time": "4:25 p.m.", "tv": "CBS"}, {"week": 16, "home": "New York Jets", "away": "New England Patriots", "date": "Dec. 27", "time": "1:00 p.m.", "tv": "CBS"}, {"week": 17, "home": "Los Angeles Chargers", "away": "Kansas City Chiefs", "date": "TBD", "time": "TBD", "tv": "TBD"}]}, "Las Vegas Raiders": {"count": 6, "group": ["Las Vegas Raiders", "Arizona Cardinals", "Denver Broncos", "New England Patriots", "New York Jets", "Tennessee Titans"], "team_involved": 3, "games": [{"week": 15, "home": "Arizona Cardinals", "away": "New York Jets", "date": "Dec. 20", "time": "4:05 p.m.", "tv": "Fox"}, {"week": 15, "home": "Denver Broncos", "away": "Las Vegas Raiders", "date": "Dec. 20", "time": "4:25 p.m.", "tv": "CBS"}, {"week": 16, "home": "Las Vegas Raiders", "away": "Tennessee Titans", "date": "Dec. 27", "time": "4:05 p.m.", "tv": "Fox"}, {"week": 16, "home": "New York Jets", "away": "New England Patriots", "date": "Dec. 27", "time": "1:00 p.m.", "tv": "CBS"}, {"week": 17, "home": "Arizona Cardinals", "away": "Las Vegas Raiders", "date": "Jan. 3", "time": "4:05 p.m.", "tv": "CBS"}, {"week": 17, "home": "New England Patriots", "away": "Denver Broncos", "date": "TBD", "time": "TBD", "tv": "TBD"}]}, "Los Angeles Chargers": {"count": 6, "group": ["Los Angeles Chargers", "Buffalo Bills", "Chicago Bears", "Kansas City Chiefs", "Miami Dolphins", "San Francisco 49ers"], "team_involved": 3, "games": [{"week": 15, "home": "Buffalo Bills", "away": "Chicago Bears", "date": "Dec. 19 (Saturday)", "time": "8:20 p.m.", "tv": "CBS"}, {"week": 15, "home": "Los Angeles Chargers", "away": "San Francisco 49ers", "date": "Dec. 17 (TNF)", "time": "8:15 p.m.", "tv": "Prime Video"}, {"week": 16, "home": "Kansas City Chiefs", "away": "San Francisco 49ers", "date": "Dec. 27", "time": "4:25 p.m.", "tv": "CBS"}, {"week": 16, "home": "Miami Dolphins", "away": "Los Angeles Chargers", "date": "Dec. 27", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 17, "home": "Los Angeles Chargers", "away": "Kansas City Chiefs", "date": "TBD", "time": "TBD", "tv": "TBD"}, {"week": 17, "home": "Miami Dolphins", "away": "Buffalo Bills", "date": "Jan. 3", "time": "1:00 p.m.", "tv": "CBS"}]}, "Los Angeles Rams": {"count": 6, "group": ["Los Angeles Rams", "Atlanta Falcons", "Dallas Cowboys", "New Orleans Saints", "Seattle Seahawks", "Tampa Bay Buccaneers"], "team_involved": 3, "games": [{"week": 15, "home": "Los Angeles Rams", "away": "Dallas Cowboys", "date": "Dec. 20", "time": "4:25 p.m.", "tv": "CBS"}, {"week": 15, "home": "Tampa Bay Buccaneers", "away": "New Orleans Saints", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 16, "home": "Atlanta Falcons", "away": "Tampa Bay Buccaneers", "date": "TBD", "time": "TBD", "tv": "TBD"}, {"week": 16, "home": "Seattle Seahawks", "away": "Los Angeles Rams", "date": "Dec. 25 (Friday)", "time": "8:15 p.m.", "tv": "Fox"}, {"week": 17, "home": "Atlanta Falcons", "away": "New Orleans Saints", "date": "Jan. 3", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 17, "home": "Tampa Bay Buccaneers", "away": "Los Angeles Rams", "date": "TBD", "time": "TBD", "tv": "TBD"}]}, "Miami Dolphins": {"count": 6, "group": ["Miami Dolphins", "Buffalo Bills", "Chicago Bears", "Denver Broncos", "Green Bay Packers", "Los Angeles Chargers"], "team_involved": 3, "games": [{"week": 15, "home": "Buffalo Bills", "away": "Chicago Bears", "date": "Dec. 19 (Saturday)", "time": "8:20 p.m.", "tv": "CBS"}, {"week": 15, "home": "Green Bay Packers", "away": "Miami Dolphins", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 16, "home": "Chicago Bears", "away": "Green Bay Packers", "date": "Dec. 25 (Christmas)", "time": "1 p.m.", "tv": "Netflix"}, {"week": 16, "home": "Denver Broncos", "away": "Buffalo Bills", "date": "Dec. 25 (Christmas)", "time": "4:30 p.m.", "tv": "Netflix"}, {"week": 16, "home": "Miami Dolphins", "away": "Los Angeles Chargers", "date": "Dec. 27", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 17, "home": "Miami Dolphins", "away": "Buffalo Bills", "date": "Jan. 3", "time": "1:00 p.m.", "tv": "CBS"}]}, "Minnesota Vikings": {"count": 6, "group": ["Minnesota Vikings", "Arizona Cardinals", "Atlanta Falcons", "New Orleans Saints", "New York Jets", "Washington Commanders"], "team_involved": 2, "games": [{"week": 15, "home": "Arizona Cardinals", "away": "New York Jets", "date": "Dec. 20", "time": "4:05 p.m.", "tv": "Fox"}, {"week": 15, "home": "Washington Commanders", "away": "Atlanta Falcons", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 16, "home": "Minnesota Vikings", "away": "Washington Commanders", "date": "TBD", "time": "TBD", "tv": "TBD"}, {"week": 16, "home": "New Orleans Saints", "away": "Arizona Cardinals", "date": "Dec. 27", "time": "1 p.m.", "tv": "Fox"}, {"week": 17, "home": "Atlanta Falcons", "away": "New Orleans Saints", "date": "Jan. 3", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 17, "home": "New York Jets", "away": "Minnesota Vikings", "date": "Jan. 3", "time": "1:00 p.m.", "tv": "CBS"}]}, "New England Patriots": {"count": 6, "group": ["New England Patriots", "Arizona Cardinals", "Denver Broncos", "Kansas City Chiefs", "Las Vegas Raiders", "New York Jets"], "team_involved": 3, "games": [{"week": 15, "home": "Arizona Cardinals", "away": "New York Jets", "date": "Dec. 20", "time": "4:05 p.m.", "tv": "Fox"}, {"week": 15, "home": "Denver Broncos", "away": "Las Vegas Raiders", "date": "Dec. 20", "time": "4:25 p.m.", "tv": "CBS"}, {"week": 15, "home": "Kansas City Chiefs", "away": "New England Patriots", "date": "Dec. 21 (MNF)", "time": "8:15 p.m.", "tv": "ESPN"}, {"week": 16, "home": "New York Jets", "away": "New England Patriots", "date": "Dec. 27", "time": "1:00 p.m.", "tv": "CBS"}, {"week": 17, "home": "Arizona Cardinals", "away": "Las Vegas Raiders", "date": "Jan. 3", "time": "4:05 p.m.", "tv": "CBS"}, {"week": 17, "home": "New England Patriots", "away": "Denver Broncos", "date": "TBD", "time": "TBD", "tv": "TBD"}]}, "New Orleans Saints": {"count": 6, "group": ["New Orleans Saints", "Arizona Cardinals", "Atlanta Falcons", "Dallas Cowboys", "Los Angeles Rams", "Tampa Bay Buccaneers"], "team_involved": 3, "games": [{"week": 15, "home": "Los Angeles Rams", "away": "Dallas Cowboys", "date": "Dec. 20", "time": "4:25 p.m.", "tv": "CBS"}, {"week": 15, "home": "Tampa Bay Buccaneers", "away": "New Orleans Saints", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 16, "home": "Atlanta Falcons", "away": "Tampa Bay Buccaneers", "date": "TBD", "time": "TBD", "tv": "TBD"}, {"week": 16, "home": "New Orleans Saints", "away": "Arizona Cardinals", "date": "Dec. 27", "time": "1 p.m.", "tv": "Fox"}, {"week": 17, "home": "Atlanta Falcons", "away": "New Orleans Saints", "date": "Jan. 3", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 17, "home": "Tampa Bay Buccaneers", "away": "Los Angeles Rams", "date": "TBD", "time": "TBD", "tv": "TBD"}]}, "New York Giants": {"count": 6, "group": ["New York Giants", "Baltimore Ravens", "Cincinnati Bengals", "Cleveland Browns", "Dallas Cowboys", "Indianapolis Colts"], "team_involved": 2, "games": [{"week": 15, "home": "New York Giants", "away": "Cleveland Browns", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "CBS"}, {"week": 16, "home": "Baltimore Ravens", "away": "Cleveland Browns", "date": "Dec. 27", "time": "1:00 p.m.", "tv": "CBS"}, {"week": 16, "home": "Indianapolis Colts", "away": "Cincinnati Bengals", "date": "TBD", "time": "TBD", "tv": "TBD"}, {"week": 17, "home": "Cincinnati Bengals", "away": "Baltimore Ravens", "date": "Dec. 31 (TNF - New Year's Eve)", "time": "8:15 p.m.", "tv": "Prime Video"}, {"week": 17, "home": "Cleveland Browns", "away": "Indianapolis Colts", "date": "Jan. 3", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 17, "home": "Dallas Cowboys", "away": "New York Giants", "date": "Jan. 3", "time": "1 p.m.", "tv": "Fox"}]}, "New York Jets": {"count": 6, "group": ["New York Jets", "Arizona Cardinals", "Denver Broncos", "Las Vegas Raiders", "Minnesota Vikings", "New England Patriots"], "team_involved": 3, "games": [{"week": 15, "home": "Arizona Cardinals", "away": "New York Jets", "date": "Dec. 20", "time": "4:05 p.m.", "tv": "Fox"}, {"week": 15, "home": "Denver Broncos", "away": "Las Vegas Raiders", "date": "Dec. 20", "time": "4:25 p.m.", "tv": "CBS"}, {"week": 16, "home": "New York Jets", "away": "New England Patriots", "date": "Dec. 27", "time": "1:00 p.m.", "tv": "CBS"}, {"week": 17, "home": "Arizona Cardinals", "away": "Las Vegas Raiders", "date": "Jan. 3", "time": "4:05 p.m.", "tv": "CBS"}, {"week": 17, "home": "New England Patriots", "away": "Denver Broncos", "date": "TBD", "time": "TBD", "tv": "TBD"}, {"week": 17, "home": "New York Jets", "away": "Minnesota Vikings", "date": "Jan. 3", "time": "1:00 p.m.", "tv": "CBS"}]}, "Philadelphia Eagles": {"count": 6, "group": ["Philadelphia Eagles", "Houston Texans", "Kansas City Chiefs", "Los Angeles Chargers", "San Francisco 49ers", "Seattle Seahawks"], "team_involved": 3, "games": [{"week": 15, "home": "Los Angeles Chargers", "away": "San Francisco 49ers", "date": "Dec. 17 (TNF)", "time": "8:15 p.m.", "tv": "Prime Video"}, {"week": 15, "home": "Philadelphia Eagles", "away": "Seattle Seahawks", "date": "Dec. 19 (Saturday)", "time": "5:00 p.m.", "tv": "Fox"}, {"week": 16, "home": "Kansas City Chiefs", "away": "San Francisco 49ers", "date": "Dec. 27", "time": "4:25 p.m.", "tv": "CBS"}, {"week": 16, "home": "Philadelphia Eagles", "away": "Houston Texans", "date": "Dec. 24 (TNF)", "time": "8:15 p.m.", "tv": "Prime Video"}, {"week": 17, "home": "Los Angeles Chargers", "away": "Kansas City Chiefs", "date": "TBD", "time": "TBD", "tv": "TBD"}, {"week": 17, "home": "San Francisco 49ers", "away": "Philadelphia Eagles", "date": "Jan. 3 (SNF)", "time": "8:20 p.m.", "tv": "NBC"}]}, "Pittsburgh Steelers": {"count": 7, "group": ["Pittsburgh Steelers", "Baltimore Ravens", "Carolina Panthers", "Cincinnati Bengals", "Indianapolis Colts", "Tennessee Titans"], "team_involved": 3, "games": [{"week": 15, "home": "Carolina Panthers", "away": "Cincinnati Bengals", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 15, "home": "Pittsburgh Steelers", "away": "Baltimore Ravens", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "CBS"}, {"week": 15, "home": "Tennessee Titans", "away": "Indianapolis Colts", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "CBS"}, {"week": 16, "home": "Indianapolis Colts", "away": "Cincinnati Bengals", "date": "TBD", "time": "TBD", "tv": "TBD"}, {"week": 16, "home": "Pittsburgh Steelers", "away": "Carolina Panthers", "date": "TBD", "time": "TBD", "tv": "TBD"}, {"week": 17, "home": "Cincinnati Bengals", "away": "Baltimore Ravens", "date": "Dec. 31 (TNF - New Year's Eve)", "time": "8:15 p.m.", "tv": "Prime Video"}, {"week": 17, "home": "Pittsburgh Steelers", "away": "Tennessee Titans", "date": "Jan. 3", "time": "1:00 p.m.", "tv": "CBS"}]}, "San Francisco 49ers": {"count": 6, "group": ["San Francisco 49ers", "Buffalo Bills", "Kansas City Chiefs", "Los Angeles Chargers", "Miami Dolphins", "Philadelphia Eagles"], "team_involved": 3, "games": [{"week": 15, "home": "Los Angeles Chargers", "away": "San Francisco 49ers", "date": "Dec. 17 (TNF)", "time": "8:15 p.m.", "tv": "Prime Video"}, {"week": 16, "home": "Kansas City Chiefs", "away": "San Francisco 49ers", "date": "Dec. 27", "time": "4:25 p.m.", "tv": "CBS"}, {"week": 16, "home": "Miami Dolphins", "away": "Los Angeles Chargers", "date": "Dec. 27", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 17, "home": "Los Angeles Chargers", "away": "Kansas City Chiefs", "date": "TBD", "time": "TBD", "tv": "TBD"}, {"week": 17, "home": "Miami Dolphins", "away": "Buffalo Bills", "date": "Jan. 3", "time": "1:00 p.m.", "tv": "CBS"}, {"week": 17, "home": "San Francisco 49ers", "away": "Philadelphia Eagles", "date": "Jan. 3 (SNF)", "time": "8:20 p.m.", "tv": "NBC"}]}, "Seattle Seahawks": {"count": 6, "group": ["Seattle Seahawks", "Atlanta Falcons", "Carolina Panthers", "Los Angeles Rams", "New Orleans Saints", "Tampa Bay Buccaneers"], "team_involved": 2, "games": [{"week": 15, "home": "Tampa Bay Buccaneers", "away": "New Orleans Saints", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 16, "home": "Atlanta Falcons", "away": "Tampa Bay Buccaneers", "date": "TBD", "time": "TBD", "tv": "TBD"}, {"week": 16, "home": "Seattle Seahawks", "away": "Los Angeles Rams", "date": "Dec. 25 (Friday)", "time": "8:15 p.m.", "tv": "Fox"}, {"week": 17, "home": "Atlanta Falcons", "away": "New Orleans Saints", "date": "Jan. 3", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 17, "home": "Carolina Panthers", "away": "Seattle Seahawks", "date": "Jan. 3", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 17, "home": "Tampa Bay Buccaneers", "away": "Los Angeles Rams", "date": "TBD", "time": "TBD", "tv": "TBD"}]}, "Tampa Bay Buccaneers": {"count": 6, "group": ["Tampa Bay Buccaneers", "Arizona Cardinals", "Atlanta Falcons", "Dallas Cowboys", "Los Angeles Rams", "New Orleans Saints"], "team_involved": 3, "games": [{"week": 15, "home": "Los Angeles Rams", "away": "Dallas Cowboys", "date": "Dec. 20", "time": "4:25 p.m.", "tv": "CBS"}, {"week": 15, "home": "Tampa Bay Buccaneers", "away": "New Orleans Saints", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 16, "home": "Atlanta Falcons", "away": "Tampa Bay Buccaneers", "date": "TBD", "time": "TBD", "tv": "TBD"}, {"week": 16, "home": "New Orleans Saints", "away": "Arizona Cardinals", "date": "Dec. 27", "time": "1 p.m.", "tv": "Fox"}, {"week": 17, "home": "Atlanta Falcons", "away": "New Orleans Saints", "date": "Jan. 3", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 17, "home": "Tampa Bay Buccaneers", "away": "Los Angeles Rams", "date": "TBD", "time": "TBD", "tv": "TBD"}]}, "Tennessee Titans": {"count": 7, "group": ["Tennessee Titans", "Baltimore Ravens", "Carolina Panthers", "Cincinnati Bengals", "Indianapolis Colts", "Pittsburgh Steelers"], "team_involved": 2, "games": [{"week": 15, "home": "Carolina Panthers", "away": "Cincinnati Bengals", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 15, "home": "Pittsburgh Steelers", "away": "Baltimore Ravens", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "CBS"}, {"week": 15, "home": "Tennessee Titans", "away": "Indianapolis Colts", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "CBS"}, {"week": 16, "home": "Indianapolis Colts", "away": "Cincinnati Bengals", "date": "TBD", "time": "TBD", "tv": "TBD"}, {"week": 16, "home": "Pittsburgh Steelers", "away": "Carolina Panthers", "date": "TBD", "time": "TBD", "tv": "TBD"}, {"week": 17, "home": "Cincinnati Bengals", "away": "Baltimore Ravens", "date": "Dec. 31 (TNF - New Year's Eve)", "time": "8:15 p.m.", "tv": "Prime Video"}, {"week": 17, "home": "Pittsburgh Steelers", "away": "Tennessee Titans", "date": "Jan. 3", "time": "1:00 p.m.", "tv": "CBS"}]}, "Washington Commanders": {"count": 6, "group": ["Washington Commanders", "Atlanta Falcons", "Jacksonville Jaguars", "Minnesota Vikings", "New Orleans Saints", "Tampa Bay Buccaneers"], "team_involved": 3, "games": [{"week": 15, "home": "Tampa Bay Buccaneers", "away": "New Orleans Saints", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 15, "home": "Washington Commanders", "away": "Atlanta Falcons", "date": "Dec. 20", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 16, "home": "Atlanta Falcons", "away": "Tampa Bay Buccaneers", "date": "TBD", "time": "TBD", "tv": "TBD"}, {"week": 16, "home": "Minnesota Vikings", "away": "Washington Commanders", "date": "TBD", "time": "TBD", "tv": "TBD"}, {"week": 17, "home": "Atlanta Falcons", "away": "New Orleans Saints", "date": "Jan. 3", "time": "1:00 p.m.", "tv": "Fox"}, {"week": 17, "home": "Jacksonville Jaguars", "away": "Washington Commanders", "date": "TBD", "time": "TBD", "tv": "TBD"}]}}};
+
+const TEAM_COLORS = {
+  "Arizona Cardinals": "#97233F", "Atlanta Falcons": "#A71930", "Baltimore Ravens": "#241773",
+  "Buffalo Bills": "#00338D", "Carolina Panthers": "#0085CA", "Chicago Bears": "#0B162A",
+  "Cincinnati Bengals": "#FB4F14", "Cleveland Browns": "#311D00", "Dallas Cowboys": "#003594",
+  "Denver Broncos": "#FB4F14", "Detroit Lions": "#0076B6", "Green Bay Packers": "#203731",
+  "Houston Texans": "#03202F", "Indianapolis Colts": "#002C5F", "Jacksonville Jaguars": "#006778",
+  "Kansas City Chiefs": "#E31837", "Las Vegas Raiders": "#000000", "Los Angeles Chargers": "#0080C6",
+  "Los Angeles Rams": "#003594", "Miami Dolphins": "#008E97", "Minnesota Vikings": "#4F2683",
+  "New England Patriots": "#002244", "New Orleans Saints": "#D3BC8D", "New York Giants": "#0B2265",
+  "New York Jets": "#125740", "Philadelphia Eagles": "#004C54", "Pittsburgh Steelers": "#FFB612",
+  "San Francisco 49ers": "#AA0000", "Seattle Seahawks": "#002244", "Tampa Bay Buccaneers": "#D50A0A",
+  "Tennessee Titans": "#0C2340", "Washington Commanders": "#5A1414"
+};
+
+function App() {
+  const teams = DATA.teams;
+  const abbr = DATA.abbr;
+  const [selected, setSelected] = useState("Minnesota Vikings");
+
+  const sortedTeams = useMemo(
+    () => [...teams].sort((a, b) => a.localeCompare(b)),
+    [teams]
+  );
+
+  const bg = DATA.best_groups[selected];
+  const accent = TEAM_COLORS[selected] || "#1F3864";
+
+  // Group games by week
+  const byWeek = useMemo(() => {
+    const m = { 15: [], 16: [], 17: [] };
+    bg.games.forEach((g) => m[g.week].push(g));
+    return m;
+  }, [bg]);
+
+  // League-wide ranking
+  const ranking = useMemo(() => {
+    return [...teams]
+      .map((t) => ({ team: t, count: DATA.best_groups[t].count, ti: DATA.best_groups[t].team_involved }))
+      .sort((a, b) => b.count - a.count || b.ti - a.ti);
+  }, [teams]);
+
+  const rank = ranking.findIndex((r) => r.team === selected) + 1;
+
+  return (
+    <div style={{
+      minHeight: "100vh",
+      background: "radial-gradient(circle at 20% 10%, #16213e 0%, #0c0f1d 55%, #05060d 100%)",
+      color: "#e8eaf0",
+      fontFamily: "'DM Sans', system-ui, sans-serif",
+      padding: "0",
+    }}>
+      <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+
+      {/* Header */}
+      <div style={{
+        padding: "32px 28px 22px",
+        borderBottom: "1px solid rgba(255,255,255,0.08)",
+        background: `linear-gradient(100deg, ${accent}22, transparent 60%)`,
+      }}>
+        <div style={{
+          fontFamily: "'JetBrains Mono', monospace", fontSize: 12, letterSpacing: 3,
+          textTransform: "uppercase", color: "#8a93b2", marginBottom: 8,
+        }}>
+          2026 NFL · Weeks 15–17 Cluster Finder
+        </div>
+        <h1 style={{
+          fontFamily: "'Archivo Black', sans-serif", fontSize: 34, margin: 0,
+          lineHeight: 1.0, letterSpacing: -0.5,
+        }}>
+          Late-Season Rivalry Clusters
+        </h1>
+        <p style={{ color: "#9aa3c0", maxWidth: 620, fontSize: 14.5, lineHeight: 1.5, marginTop: 12 }}>
+          For each team, the tightest group of 4–6 teams that play each other the most across
+          the Weeks 15–17 stretch run. Pick a team to see its best cluster.
+        </p>
+      </div>
+
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 0 }}>
+        {/* Sidebar: team picker */}
+        <div style={{
+          width: 230, flexShrink: 0, borderRight: "1px solid rgba(255,255,255,0.08)",
+          maxHeight: "calc(100vh - 150px)", overflowY: "auto", padding: "10px 0",
+        }}>
+          {sortedTeams.map((t) => {
+            const active = t === selected;
+            const c = TEAM_COLORS[t];
+            return (
+              <button key={t} onClick={() => setSelected(t)} style={{
+                display: "flex", alignItems: "center", gap: 10, width: "100%",
+                padding: "9px 16px", background: active ? `${c}33` : "transparent",
+                border: "none", borderLeft: active ? `3px solid ${c}` : "3px solid transparent",
+                color: active ? "#fff" : "#aeb6d4", cursor: "pointer", textAlign: "left",
+                fontSize: 13.5, fontWeight: active ? 700 : 500, transition: "all .15s",
+                fontFamily: "'DM Sans', sans-serif",
+              }}>
+                <span style={{
+                  fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 700,
+                  width: 34, height: 22, display: "flex", alignItems: "center",
+                  justifyContent: "center", borderRadius: 4, background: c, color: "#fff",
+                  flexShrink: 0, boxShadow: active ? `0 0 0 1px rgba(255,255,255,.3)` : "none",
+                }}>{abbr[t]}</span>
+                {t.split(" ").slice(-1)[0] === "Team" ? t : t.replace(/^(.*)\s(\S+)$/, "$2")}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Main panel */}
+        <div style={{ flex: 1, minWidth: 340, padding: "24px 28px" }}>
+          {/* Team title card */}
+          <div style={{
+            display: "flex", alignItems: "center", gap: 16, marginBottom: 22,
+            flexWrap: "wrap",
+          }}>
+            <div style={{
+              fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 20,
+              padding: "10px 14px", borderRadius: 10, background: accent, color: "#fff",
+              boxShadow: `0 8px 24px ${accent}66`,
+            }}>{abbr[selected]}</div>
+            <div>
+              <div style={{ fontFamily: "'Archivo Black', sans-serif", fontSize: 24, lineHeight: 1 }}>
+                {selected}
+              </div>
+              <div style={{ color: "#8a93b2", fontSize: 13, marginTop: 5 }}>
+                Connectivity rank: <span style={{ color: "#fff", fontWeight: 700 }}>#{rank}</span> of 32
+              </div>
+            </div>
+          </div>
+
+          {/* Stat tiles */}
+          <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 26 }}>
+            <StatTile label="Intra-group games" value={bg.count} accent={accent} big />
+            <StatTile label="Involving this team" value={bg.team_involved} accent={accent} />
+            <StatTile label="Teams in group" value={bg.group.length} accent={accent} />
+          </div>
+
+          {/* Group chips */}
+          <SectionLabel>The Cluster</SectionLabel>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 28 }}>
+            {bg.group.map((t) => {
+              const isAnchor = t === selected;
+              const c = TEAM_COLORS[t];
+              return (
+                <div key={t} style={{
+                  display: "flex", alignItems: "center", gap: 8, padding: "7px 12px 7px 8px",
+                  borderRadius: 999, background: isAnchor ? c : "rgba(255,255,255,0.06)",
+                  border: `1px solid ${isAnchor ? c : "rgba(255,255,255,0.12)"}`,
+                  fontWeight: isAnchor ? 700 : 500, fontSize: 13,
+                  color: isAnchor ? "#fff" : "#d6dbf0",
+                }}>
+                  <span style={{
+                    fontFamily: "'JetBrains Mono', monospace", fontSize: 10, fontWeight: 700,
+                    padding: "2px 6px", borderRadius: 4, background: isAnchor ? "rgba(255,255,255,.25)" : c,
+                    color: "#fff",
+                  }}>{abbr[t]}</span>
+                  {t}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Week grid */}
+          <SectionLabel>Games Among the Group · Weeks 15–17</SectionLabel>
+          <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginTop: 12 }}>
+            {[15, 16, 17].map((wk) => (
+              <div key={wk} style={{
+                flex: "1 1 200px", minWidth: 200, background: "rgba(255,255,255,0.035)",
+                border: "1px solid rgba(255,255,255,0.08)", borderRadius: 14, overflow: "hidden",
+              }}>
+                <div style={{
+                  padding: "10px 14px", background: "rgba(255,255,255,0.05)",
+                  fontFamily: "'JetBrains Mono', monospace", fontSize: 12, letterSpacing: 1,
+                  fontWeight: 700, color: "#aeb6d4", borderBottom: "1px solid rgba(255,255,255,0.06)",
+                }}>WEEK {wk}</div>
+                <div style={{ padding: 10, display: "flex", flexDirection: "column", gap: 8 }}>
+                  {byWeek[wk].length === 0 && (
+                    <div style={{ color: "#5b6488", fontSize: 12.5, padding: "8px 4px", fontStyle: "italic" }}>
+                      No intra-group games
+                    </div>
+                  )}
+                  {byWeek[wk].map((g, i) => {
+                    const involved = g.home === selected || g.away === selected;
+                    return (
+                      <div key={i} style={{
+                        padding: "9px 10px", borderRadius: 9,
+                        background: involved ? `${accent}2e` : "rgba(255,255,255,0.04)",
+                        border: `1px solid ${involved ? accent : "rgba(255,255,255,0.07)"}`,
+                      }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12.5, fontWeight: 600 }}>
+                          <Tag c={TEAM_COLORS[g.away]} t={abbr[g.away]} />
+                          <span style={{ color: "#7a83a6", fontSize: 11 }}>@</span>
+                          <Tag c={TEAM_COLORS[g.home]} t={abbr[g.home]} />
+                        </div>
+                        <div style={{ color: "#8a93b2", fontSize: 11, marginTop: 5 }}>
+                          {g.date} · {g.tv}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Note */}
+          <div style={{
+            marginTop: 26, padding: "12px 16px", borderRadius: 10,
+            background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)",
+            fontSize: 12.5, color: "#8a93b2", lineHeight: 1.5,
+          }}>
+            <strong style={{ color: "#c2c9e6" }}>How to read this:</strong> a "cluster" is the group of teams
+            (anchored on the one you picked) that maximizes head-to-head games <em>within the group</em> over
+            Weeks 15–17. Highlighted games directly involve {selected.split(" ").slice(-1)[0]}.
+            The AFC North core tops the league at 7 games; most teams peak at 6.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StatTile({ label, value, accent, big }) {
+  return (
+    <div style={{
+      padding: "16px 20px", borderRadius: 14, minWidth: big ? 130 : 110,
+      background: big ? `linear-gradient(135deg, ${accent}, ${accent}aa)` : "rgba(255,255,255,0.05)",
+      border: big ? "none" : "1px solid rgba(255,255,255,0.1)",
+      boxShadow: big ? `0 10px 30px ${accent}55` : "none",
+    }}>
+      <div style={{
+        fontFamily: "'Archivo Black', sans-serif", fontSize: big ? 42 : 32,
+        lineHeight: 1, color: "#fff",
+      }}>{value}</div>
+      <div style={{
+        fontSize: 11, letterSpacing: 0.5, color: big ? "rgba(255,255,255,0.85)" : "#9aa3c0",
+        marginTop: 6, textTransform: "uppercase", fontWeight: 600,
+      }}>{label}</div>
+    </div>
+  );
+}
+
+function SectionLabel({ children }) {
+  return (
+    <div style={{
+      fontFamily: "'JetBrains Mono', monospace", fontSize: 11.5, letterSpacing: 2,
+      textTransform: "uppercase", color: "#7681a8", marginBottom: 6, fontWeight: 700,
+    }}>{children}</div>
+  );
+}
+
+function Tag({ c, t }) {
+  return (
+    <span style={{
+      fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, fontWeight: 700,
+      padding: "2px 6px", borderRadius: 4, background: c, color: "#fff",
+    }}>{t}</span>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<App />);
+</script>
+</body>
+</html>
